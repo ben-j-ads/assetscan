@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "assetscan"
+version = "0.1.0"
+description = "Score your brand's distinctive assets on fame and uniqueness (Ehrenberg-Bass method), with charts."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = []
+keywords = ["marketing", "brand", "distinctive-assets", "ehrenberg-bass", "marketing-science"]
+
+[project.scripts]
+assetscan = "assetscan.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+assetscan = ["web/*", "web/fonts/*", "web/img/*"]

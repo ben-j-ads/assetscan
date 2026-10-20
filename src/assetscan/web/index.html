@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>assetscan</title>
+<meta name="description" content="Score your brand's distinctive assets on fame and uniqueness. Runs on your machine.">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="scan.css">
+<script>
+  try { var t = localStorage.getItem("assetscan-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">skip to the tool</a>
+
+<header class="top">
+  <a class="wordmark" href="./" aria-label="ben.j.ads">
+    <img class="light-only" src="img/wordmark-light.svg" alt="ben.j.ads">
+    <img class="dark-only" src="img/wordmark-dark.svg" alt="ben.j.ads">
+  </a>
+  <button class="theme label" id="theme" type="button" aria-pressed="false">night shift</button>
+</header>
+
+<main id="main">
+  <section class="hero grid">
+    <p class="label">free tool / marketing science</p>
+    <h1>is it yours?</h1>
+    <p class="lead">Show people your logo, colour or sound with the brand removed. I score how many name you, and how many name someone else.</p>
+  </section>
+
+  <form id="scan-form" class="panel" novalidate>
+    <div class="panel-head">
+      <h2>the study</h2>
+      <div class="examples">
+        <button type="button" class="link" id="example">load illustrative example</button>
+      </div>
+    </div>
+    <div class="rows-head label" aria-hidden="true">
+      <span>asset</span><span>shown to</span><span>named you</span><span>named a rival</span><span></span>
+    </div>
+    <div id="rows"></div>
+    <button type="button" class="link add" id="add-row">+ asset</button>
+    <p class="hint">One row per unbranded asset. "Shown to" is how many category buyers saw it. The rest saw it and named nobody. Use the csv box if you want rivals broken out by name.</p>
+
+    <details class="csv">
+      <summary>or paste a csv</summary>
+      <label for="csv" class="hint">Header <code>asset,respondents,brand,Rival A,Rival B</code>. One column per rival. Add a <code>prompted</code> column (yes/no) if you showed respondents a brand list.</label>
+      <textarea id="csv" rows="6" spellcheck="false" placeholder="asset,respondents,brand,Rival A,Rival B&#10;Logo mark,400,248,22,10"></textarea>
+    </details>
+
+    <details class="discipline">
+      <summary>the settings</summary>
+      <p class="hint">Where the grid draws its lines is a convention, not a law. Change it if your category needs it.</p>
+      <div class="fields">
+        <label>fame line (%)<input id="fame_cut" type="number" min="1" max="99" value="30" inputmode="numeric"></label>
+        <label>uniqueness line (%)<input id="uniq_cut" type="number" min="1" max="99" value="50" inputmode="numeric"></label>
+        <label>weight on fame in the score (%)<input id="w_fame" type="number" min="1" max="99" value="50" inputmode="numeric"></label>
+      </div>
+    </details>
+
+    <div class="actions">
+      <button class="primary" type="submit">score my assets →</button>
+      <p id="form-error" class="error" role="alert" hidden></p>
+    </div>
+  </form>
+
+  <section id="result" class="result" aria-live="polite" hidden></section>
+
+  <section class="method">
+    <h2>the maths</h2>
+    <dl>
+      <dt>fame</dt><dd>Named you ÷ everyone shown the asset. Does the asset make people think of you?</dd>
+      <dt>uniqueness</dt><dd>Named you ÷ everyone who named any brand. When they think of a brand, is it only you?</dd>
+      <dt>score</dt><dd>100 × fame<sup>w</sup> × uniqueness<sup>1−w</sup>, a weighted geometric mean. It is zero if either is zero, because an asset needs both.</dd>
+      <dt>intervals</dt><dd>Wilson 95% intervals on fame and uniqueness. The score range comes from 4,000 seeded draws of a Dirichlet posterior, so a thin sample shows up as a wide range.</dd>
+      <dt>grid</dt><dd>Use or lose, Invest, Avoid solo use, Test or ignore. The % shown is the probability the asset really sits in that box, given your sample.</dd>
+    </dl>
+    <p class="caption">Sources and judgement calls are in docs/RESEARCH.md.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <img class="light-only" src="img/footnote-light.svg" alt="ben.j.ads">
+  <img class="dark-only" src="img/footnote-dark.svg" alt="ben.j.ads">
+  <p class="caption"><span class="tag">1</span> for people who spend money. Runs on your machine. Nothing is sent anywhere.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

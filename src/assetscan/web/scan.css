@@ -1,0 +1,32 @@
+/* assetscan additions on top of the shared ben.j.ads UI kit (style.css). */
+.rows-head, .row { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 44px; }
+.score-line { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+.score-line .range { font-size: 20px; color: var(--ink-muted); }
+.summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--space-3); margin-top: var(--space-4); }
+.card { background: var(--paper-raised); border: 1px solid var(--rule); padding: var(--space-3); }
+.card .n { font: 800 44px/1 var(--font-display); text-transform: lowercase; margin-top: var(--space-1); }
+.chip { display: inline-block; font: 700 12px var(--font-text); text-transform: uppercase; letter-spacing: 0.12em; border: 1.5px solid var(--ink); padding: 2px var(--space-2); }
+.chip.use { background: var(--lime); color: var(--on-lime); border-color: var(--on-lime); }
+.chip.test { background: var(--ink); color: var(--paper); }
+.asset-card { padding: var(--space-3) 0; border-bottom: 1px solid var(--rule); }
+.asset-card .head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.asset-card .sc { font: 800 36px/1 var(--font-display); text-transform: lowercase; }
+.asset-card p { margin: var(--space-1) 0 0; }
+.asset-card ul { margin: var(--space-2) 0 0; padding-left: var(--space-4); color: var(--ink-muted); font-size: 15px; }
+.legend { display: flex; gap: var(--space-4); flex-wrap: wrap; font-size: 13px; color: var(--ink-muted); margin-top: var(--space-2); }
+.legend i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; border: 1.5px solid var(--ink); }
+.method { margin-top: var(--space-6); }
+.method dl { display: grid; grid-template-columns: 140px 1fr; gap: var(--space-2) var(--space-4); margin: var(--space-3) 0; }
+.method dt { font: 700 12px var(--font-text); text-transform: uppercase; letter-spacing: 0.12em; padding-top: 4px; }
+.method dd { margin: 0; max-width: 46em; }
+.fig .gridline { stroke: var(--rule); stroke-width: 1; }
+.fig .cut { stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.fig .ci { stroke: var(--ink-muted); stroke-width: 1.5; }
+.fig .pt { fill: var(--lime); stroke: var(--ink); stroke-width: 1.5; }
+.fig .qlabel { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; }
+@media (max-width: 720px) {
+  .row { grid-template-columns: 1fr 1fr 1fr 44px; }
+  .row .name { grid-column: 1 / -1; }
+  .row .rm { grid-column: 4; grid-row: 2; }
+  .method dl { grid-template-columns: 1fr; }
+}
