@@ -30,6 +30,11 @@ Method points that matter: use unbranded stimuli, sample category buyers, and me
 
 With fame = b/n and uniqueness = b/(b+r), where b + r <= n: if fame >= 50% then r <= n - b <= b, so uniqueness is always >= 50%. A grid with both lines at 50% can never put an asset in "avoid". So the default fame line is 30%. I could not find a primary-source cut-off. One blog cites "over 70% fame and over 60% uniqueness" for the Institute; I could not confirm it from an Institute source, so it is not used.
 
+## v0.2 additions
+
+- **Segments:** rows for the same asset in different segments are pooled by summing counts (independent respondents), and each segment is scored on its own. Pooling weights segments by sample size, so design the sample deliberately.
+- **Execution audit:** the five checks are the IDC monthly audit's list (without sound, name and context; held constant; System 1), drawn from the Ehrenberg-Bass distinctive asset idea and Orlando Wood's System 1 work. Score = share of checked items passed, averaged with touchpoint coverage (used / audited). **My design, not a published metric.** Unchecked items are excluded, not failed, so a half-audited asset isn't punished. It is kept apart from the survey score on purpose: the two measure different things (deployed vs known), and blending would hide which one is the problem.
+
 ## Sample size
 
 For a proportion near 50% at 95% confidence, ±5 points needs 385 respondents and ±10 needs 97. Uniqueness rests only on people who named some brand, so a low-fame asset needs a larger sample for the same precision. assetscan warns under 100 respondents and under 30 attributions.
@@ -37,8 +42,8 @@ For a proportion near 50% at 95% confidence, ±5 points needs 385 respondents an
 ## Not covered yet
 
 - Primary-source check of the uniqueness formula and any published thresholds (the book, Romaniuk's Journal of Brand Management papers).
-- Qualitative checklist items from the earlier IDC audit (recognisable without sound, name, context; consistency across touchpoints). Those need a different input and are a candidate for v0.2.
-- Segment splits (buyers vs non-buyers) and time series.
+- Time series (the same asset across waves).
+- Validation of the execution score against outcomes. It is a transparent checklist, not a tested predictor.
 
 ## Sources
 

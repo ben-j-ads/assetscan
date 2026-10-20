@@ -22,6 +22,8 @@ Or from a terminal: `assetscan scan examples/illustrative_asset_study.csv`.
 | **Uniqueness** | Of those who named any brand, the share who named you |
 | **The grid** | Use or lose, Invest, Avoid solo use, Test or ignore, plus how sure the data is of that box |
 | **Who gets the credit** | Which rival is taking your asset's recognition |
+| **Fame by segment** | Whether an asset travels beyond your buyers (csv `segment` column) |
+| **Known against deployed** | The distinctiveness score against an execution score from a 5-point audit |
 | **Warnings** | Thin samples, prompted tests, rivals out-scoring you |
 
 ## The maths in four lines
@@ -46,13 +48,23 @@ Lime square logo mark,400,248,22,10,6
 
 `examples/illustrative_asset_study.csv` is **invented** to show the output. Do not read anything into it.
 
+### Segments and the audit (v0.2)
+
+Add a `segment` column (one row per asset per segment) and assetscan pools the rows for the headline score and shows each segment separately. Add the audit columns for the execution check:
+
+```csv
+asset,segment,respondents,brand,Rival A,check_sound,check_name,check_context,check_consistent,check_instant,touchpoints_used,touchpoints_total
+```
+
+The checks come from the IDC distinctive asset audit: recognisable without sound, without the name, out of context; held constant across releases; read by feel rather than explained. Blank means not checked, and is left out rather than counted as a fail. The execution score is shown beside the distinctiveness score and is never blended into it. See `examples/illustrative_segments_and_audit.csv` (invented data).
+
 How many respondents? `assetscan plan --margin 5%` gives 385 per asset for ±5 points on fame at 95% confidence, worst case.
 
 ## Honest limitations (v0.1)
 
 - It scores the data you collect. It does not run the survey. Use unbranded stimuli, category buyers and **unprompted** recall.
 - The grid lines (fame 30%, uniqueness 50%) and the band cut-offs (20, 45, 70) are defaults, not published standards. Change them in the settings. With a 50% fame line, "famous but shared" can't exist, because more than half naming you leaves under half for rivals.
-- Single brand, single market. No segment splits yet.
+- Single brand, single market. Segments are pooled by summing counts, so segment sizes should reflect how you want them weighted.
 - Score weights are untested against sales outcomes. Treat the score as a ranking aid.
 - Has not had independent statistical review.
 

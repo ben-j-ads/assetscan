@@ -1,0 +1,7 @@
+asset,segment,respondents,brand,Rival A,Rival B,check_sound,check_name,check_context,check_consistent,check_instant,touchpoints_used,touchpoints_total
+Lime square logo mark,buyers,200,150,8,4,yes,yes,yes,yes,yes,9,10
+Lime square logo mark,non-buyers,200,98,14,6,yes,yes,yes,yes,yes,9,10
+Dark green bottle shape,buyers,200,90,50,20,,yes,no,no,yes,4,10
+Dark green bottle shape,non-buyers,200,50,70,25,,yes,no,no,yes,4,10
+Redaction-bar device,buyers,200,40,2,1,no,yes,yes,yes,no,10,10
+Redaction-bar device,non-buyers,200,24,4,2,no,yes,yes,yes,no,10,10

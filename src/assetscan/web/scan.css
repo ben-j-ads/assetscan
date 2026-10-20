@@ -30,3 +30,8 @@
   .row .rm { grid-column: 4; grid-row: 2; }
   .method dl { grid-template-columns: 1fr; }
 }
+.rowwrap { margin-bottom: var(--space-2); }
+.rowwrap .row { margin-bottom: 0; }
+details.audit { border-top: 0; margin-top: var(--space-1); padding-top: 0; }
+details.audit summary { font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--ink-muted); }
+select { width: 100%; font: 500 16px var(--font-text); color: var(--ink); background: var(--paper); border: 1.5px solid var(--ink); border-radius: 0; padding: 9px var(--space-2); min-height: 44px; margin-top: var(--space-1); }

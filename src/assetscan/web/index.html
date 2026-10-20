@@ -35,7 +35,8 @@
     <div class="panel-head">
       <h2>the study</h2>
       <div class="examples">
-        <button type="button" class="link" id="example">load illustrative example</button>
+        <button type="button" class="link" id="example">illustrative example</button>
+        <button type="button" class="link" id="example2">example with segments and audit</button>
       </div>
     </div>
     <div class="rows-head label" aria-hidden="true">
@@ -43,11 +44,11 @@
     </div>
     <div id="rows"></div>
     <button type="button" class="link add" id="add-row">+ asset</button>
-    <p class="hint">One row per unbranded asset. "Shown to" is how many category buyers saw it. The rest saw it and named nobody. Use the csv box if you want rivals broken out by name.</p>
+    <p class="hint">One row per unbranded asset. "Shown to" is how many category buyers saw it. The rest saw it and named nobody. Use the csv box for rivals by name, segments (buyers vs non-buyers) and the audit columns.</p>
 
     <details class="csv">
       <summary>or paste a csv</summary>
-      <label for="csv" class="hint">Header <code>asset,respondents,brand,Rival A,Rival B</code>. One column per rival. Add a <code>prompted</code> column (yes/no) if you showed respondents a brand list.</label>
+      <label for="csv" class="hint">Header <code>asset,respondents,brand,Rival A,Rival B</code>. One column per rival. Optional: <code>prompted</code> (yes/no), <code>segment</code> (one row per asset per segment), and the audit: <code>check_sound, check_name, check_context, check_consistent, check_instant</code> (yes/no/blank) plus <code>touchpoints_used, touchpoints_total</code>.</label>
       <textarea id="csv" rows="6" spellcheck="false" placeholder="asset,respondents,brand,Rival A,Rival B&#10;Logo mark,400,248,22,10"></textarea>
     </details>
 
@@ -76,6 +77,8 @@
       <dt>uniqueness</dt><dd>Named you ÷ everyone who named any brand. When they think of a brand, is it only you?</dd>
       <dt>score</dt><dd>100 × fame<sup>w</sup> × uniqueness<sup>1−w</sup>, a weighted geometric mean. It is zero if either is zero, because an asset needs both.</dd>
       <dt>intervals</dt><dd>Wilson 95% intervals on fame and uniqueness. The score range comes from 4,000 seeded draws of a Dirichlet posterior, so a thin sample shows up as a wide range.</dd>
+      <dt>audit</dt><dd>Five yes/no checks from the IDC distinctive asset audit (without sound, name, context; held constant; read by feel) plus touchpoint coverage. Unchecked items are left out, not counted as fails. The result is an execution score, shown next to the distinctiveness score and never blended into it.</dd>
+      <dt>segments</dt><dd>Segment rows are pooled for the headline score, and shown separately so you can see whether an asset travels beyond your buyers.</dd>
       <dt>grid</dt><dd>Use or lose, Invest, Avoid solo use, Test or ignore. The % shown is the probability the asset really sits in that box, given your sample.</dd>
     </dl>
     <p class="caption">Sources and judgement calls are in docs/RESEARCH.md.</p>

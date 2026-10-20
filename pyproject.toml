@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "assetscan"
-version = "0.1.0"
+version = "0.2.0"
 description = "Score your brand's distinctive assets on fame and uniqueness (Ehrenberg-Bass method), with charts."
 readme = "README.md"
 license = { text = "MIT" }

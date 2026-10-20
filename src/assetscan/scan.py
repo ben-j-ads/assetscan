@@ -19,6 +19,14 @@ QUADRANTS = {
     "avoid": ("Avoid solo use", "Famous, but shared with rivals. On its own it advertises the category, not you."),
     "test": ("Test or ignore", "Neither famous nor unique. Rework it or put the effort into another asset."),
 }
+# The execution checklist from the monthly IDC audit (Sharp / Ehrenberg-Bass + Orlando Wood's System 1 items).
+CHECKS = {
+    "sound": "Recognisable without sound",
+    "name": "Recognisable without the name",
+    "context": "Recognisable out of context, cold, at scroll speed",
+    "consistent": "Held constant across the last releases or campaigns",
+    "instant": "Read instantly and by feel (System 1), not explained in copy",
+}
 BANDS = [(70, "Ownable"), (45, "Building"), (20, "Weak"), (0, "Not an asset")]
 
 
@@ -29,6 +37,10 @@ class Asset:
     brand: int                   # linked it to your brand
     rivals: dict = field(default_factory=dict)   # rival name -> count (or {"rivals": total})
     prompted: bool = False       # was the brand list shown? (inflates fame)
+    segment: str = ""            # e.g. "buyers", "non-buyers"; blank = everyone
+    checks: dict = field(default_factory=dict)   # CHECKS key -> True / False / None (unverified)
+    used: int = 0                # touchpoints where the asset appeared ...
+    total: int = 0               # ... out of this many audited
 
     @property
     def rivals_total(self) -> int:
@@ -45,6 +57,24 @@ def validate(a: Asset) -> None:
         raise ValueError(f"'{a.name}': counts can't be negative")
     if a.brand + a.rivals_total > a.n:
         raise ValueError(f"'{a.name}': attributions ({a.brand + a.rivals_total}) exceed respondents ({a.n})")
+
+
+def checklist(a: Asset) -> dict | None:
+    """Execution audit: how well the asset is *deployed*, separate from how well it is *known*.
+    Unverified items are left out of the score rather than counted as failures."""
+    if not a.checks and not a.total:
+        return None
+    items = [{"key": k, "label": v, "result": a.checks.get(k)} for k, v in CHECKS.items()]
+    passed = sum(1 for i in items if i["result"] is True)
+    failed = sum(1 for i in items if i["result"] is False)
+    checked = passed + failed
+    coverage = a.used / a.total if a.total else None
+    parts = ([passed / checked] if checked else []) + ([coverage] if coverage is not None else [])
+    return {
+        "items": items, "passed": passed, "failed": failed, "unverified": len(items) - checked,
+        "coverage": coverage, "used": a.used, "total": a.total,
+        "score": 100 * sum(parts) / len(parts) if parts else None,
+    }
 
 
 def band(score: float) -> str:
@@ -98,8 +128,17 @@ def analyze_asset(a: Asset, fame_cut: float = 0.3, uniq_cut: float = 0.5, w_fame
     if quad == "avoid" and top_rival:
         notes.append(f"The leak is mostly {top_rival} ({a.rivals[top_rival] / attributed * 100:.0f}% of attributions).")
 
+    ck = checklist(a)
+    if ck and ck["score"] is not None:
+        if score >= 45 and ck["score"] < 50:
+            notes.append("Well known but poorly deployed. Audit shows it isn't being used consistently, so recognition may fade.")
+        if score < 45 and ck["score"] >= 70:
+            notes.append("Deployed well but not yet known. The execution is fine, so the gap is reach and repetition.")
+    if a.total and a.used > a.total:
+        raise ValueError(f"'{a.name}': touchpoints used ({a.used}) exceed audited ({a.total})")
+
     return {
-        "name": a.name, "n": a.n, "brand": a.brand, "rivals": r, "unknown": unknown,
+        "name": a.name, "n": a.n, "segment": a.segment, "checklist": ck, "brand": a.brand, "rivals": r, "unknown": unknown,
         "fame": fame, "fame_ci": [f_lo, f_hi],
         "uniqueness": uniq, "uniqueness_ci": [u_lo, u_hi],
         "score": score, "score_ci": [percentile(scores, 0.025), percentile(scores, 0.975)],
@@ -112,6 +151,29 @@ def analyze_asset(a: Asset, fame_cut: float = 0.3, uniq_cut: float = 0.5, w_fame
     }
 
 
+def pool(rows: list[Asset]) -> Asset:
+    """Combine segment rows into one asset by summing counts (respondents are independent across segments)."""
+    if len(rows) == 1:
+        return rows[0]
+    rivals: dict = {}
+    for r in rows:
+        for k, v in r.rivals.items():
+            rivals[k] = rivals.get(k, 0) + v
+    checks = {}
+    for r in rows:
+        for k, v in r.checks.items():
+            if checks.get(k) is None:
+                checks[k] = v
+    first = next((r for r in rows if r.total), rows[0])
+    return Asset(rows[0].name, sum(r.n for r in rows), sum(r.brand for r in rows), rivals,
+                 any(r.prompted for r in rows), "", checks, first.used, first.total)
+
+
+def _seg_view(r: dict) -> dict:
+    keys = ("segment", "n", "fame", "fame_ci", "uniqueness", "uniqueness_ci", "score", "score_ci", "quadrant", "quadrant_label")
+    return {k: r[k] for k in keys}
+
+
 def analyze(assets: list[Asset], fame_cut: float = 0.3, uniq_cut: float = 0.5, w_fame: float = 0.5) -> dict:
     if not assets:
         raise ValueError("add at least one asset")
@@ -119,10 +181,20 @@ def analyze(assets: list[Asset], fame_cut: float = 0.3, uniq_cut: float = 0.5, w
         raise ValueError("thresholds must be between 0 and 100%")
     if not (0 < w_fame < 1):
         raise ValueError("fame weight must be between 0 and 1")
-    names = [a.name.strip().lower() for a in assets]
-    if len(set(names)) != len(names):
-        raise ValueError("asset names must be unique")
-    rows = [analyze_asset(a, fame_cut, uniq_cut, w_fame) for a in assets]
+    groups: dict[str, list[Asset]] = {}
+    for a in assets:
+        groups.setdefault(a.name.strip().lower(), []).append(a)
+    pooled = []
+    for rows_ in groups.values():
+        segs = [r.segment.strip().lower() for r in rows_]
+        if len(rows_) > 1 and (len(set(segs)) != len(segs) or "" in segs):
+            raise ValueError(f"'{rows_[0].name}' appears twice. Give each row a different segment, or merge them")
+        pooled.append((pool(rows_), rows_ if len(rows_) > 1 else []))
+    rows = []
+    for asset, parts in pooled:
+        r = analyze_asset(asset, fame_cut, uniq_cut, w_fame)
+        r["segments"] = [_seg_view(analyze_asset(p, fame_cut, uniq_cut, w_fame)) for p in parts]
+        rows.append(r)
     rows.sort(key=lambda r: -r["score"])
     # Portfolio view: how much of the brand's recognition is concentrated in its best asset.
     top = rows[0]
@@ -130,6 +202,7 @@ def analyze(assets: list[Asset], fame_cut: float = 0.3, uniq_cut: float = 0.5, w
         "assets": len(rows), "best": top["name"], "best_score": top["score"],
         "portfolio_score": sum(r["score"] for r in rows) / len(rows),
         "ownable": sum(1 for r in rows if r["score"] >= 70),
+        "segments": sorted({sg["segment"] for r in rows for sg in r["segments"]}),
     }
     return {"settings": {"fame_cut": fame_cut, "uniq_cut": uniq_cut, "w_fame": w_fame},
             "summary": summary, "assets": rows}

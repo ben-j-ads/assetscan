@@ -9,7 +9,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from .io import read_csv_text
-from .scan import Asset, analyze
+from .scan import CHECKS, Asset, analyze
+from .io import tri
 
 WEB = Path(__file__).parent / "web"
 MAX_BODY = 1_000_000
@@ -39,7 +40,9 @@ def handle_scan(body: dict) -> dict:
             elif _num(row.get("rivals"), f"{name} rivals") > 0:
                 rivals = {"Rivals": _num(row.get("rivals"), f"{name} rivals")}
             assets.append(Asset(name, _num(row.get("n"), f"{name} respondents"), _num(row.get("brand"), f"{name} brand"),
-                                rivals, bool(row.get("prompted"))))
+                                rivals, bool(row.get("prompted")), str(row.get("segment", "")).strip(),
+                                {k: tri(v) for k, v in (row.get("checks") or {}).items() if k in CHECKS},
+                                _num(row.get("used"), f"{name} touchpoints used"), _num(row.get("total"), f"{name} touchpoints total")))
     return analyze(assets, _num(body.get("fame_cut"), "fame cut", float, 30) / 100,
                    _num(body.get("uniq_cut"), "uniqueness cut", float, 50) / 100,
                    _num(body.get("w_fame"), "fame weight", float, 50) / 100)
