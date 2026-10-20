@@ -19,4 +19,4 @@ assetscan = "assetscan.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-assetscan = ["web/*", "web/fonts/*", "web/img/*"]
+assetscan = ["web/*", "web/fonts/*", "web/img/*", "web/fonts/*.txt"]

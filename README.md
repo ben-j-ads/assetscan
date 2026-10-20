@@ -74,4 +74,11 @@ How many respondents? `assetscan plan --margin 5%` gives 385 per asset for ±5 p
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
-MIT licensed. Part of ben.j.ads: marketing science, given away free, for people who spend money.
+## License
+
+Code is MIT licensed ([LICENSE](LICENSE)). The bundled fonts (Bricolage Grotesque, Archivo) are
+SIL OFL 1.1, with licenses in `src/assetscan/web/fonts/`. The ben.j.ads wordmark, footnote mark and
+avatar in `src/assetscan/web/img/` are Ben Johnston's brand assets and are not covered by the MIT
+license. Forks should replace them.
+
+Part of ben.j.ads: marketing science, given away free, for people who spend money.
